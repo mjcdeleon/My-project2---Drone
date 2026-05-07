@@ -6,12 +6,12 @@ public class CheckpointManager : MonoBehaviour
     public parse parser;
     public Material checkpointMaterial;
 
-    // 30 feet converted to meters (30 * 0.3048 = 9.144m)
+    // 30 feet converted to meters
     public float reachRadius = 9.144f;
 
     private List<Vector3> checkpointPositions;
     private List<GameObject> drawnCheckpoints = new List<GameObject>();
-    private int currentTargetIndex = 0; // Keeping the naming convention from earlier
+    private int currentTargetIndex = 0;
 
     void Start()
     {
@@ -37,7 +37,13 @@ public class CheckpointManager : MonoBehaviour
                 sphere.GetComponent<Renderer>().material = checkpointMaterial;
             }
 
-            Destroy(sphere.GetComponent<SphereCollider>());
+            sphere.tag = "Checkpoint";
+            SphereCollider col = sphere.GetComponent<SphereCollider>();
+            if (col != null)
+            {
+                col.isTrigger = true;
+            }
+
             drawnCheckpoints.Add(sphere);
         }
 
@@ -49,22 +55,14 @@ public class CheckpointManager : MonoBehaviour
         if (index >= 0 && index < drawnCheckpoints.Count)
         {
             var renderer = drawnCheckpoints[index].GetComponent<Renderer>();
-            if (active)
-            {
-                renderer.material.color = new Color(0, 1, 0, 0.5f); // Green for target
-            }
-            else
-            {
-                renderer.material.color = new Color(1, 1, 1, 0.3f); // Default translucent
-            }
+            renderer.material.color = active ? new Color(0, 1, 0, 0.5f) : new Color(1, 1, 1, 0.3f);
         }
     }
 
     void Update()
     {
-        if (checkpointPositions == null || checkpointPositions.Count == 0) return;
+        if (checkpointPositions == null || currentTargetIndex >= checkpointPositions.Count) return;
 
-        // Measure the distance directly from this object (the XR Origin)
         Vector3 targetPos = checkpointPositions[currentTargetIndex];
         float distance = Vector3.Distance(transform.position, targetPos);
 
