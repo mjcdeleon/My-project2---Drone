@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 1844077547}
   - component: {fileID: 1844077546}
   - component: {fileID: 1844077550}
+  - component: {fileID: 1844077551}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -403,7 +404,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
@@ -421,7 +422,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SetInitialPosition
   parser: {fileID: 1844077546}
-  xrOrigin: {fileID: 1844077545}
+  droneRigidbody: {fileID: 1844077549}
+--- !u!114 &1844077551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844077543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87364b999a35f244d84c4b01b48efce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DroneController
+  maxMoveSpeed: 8
+  maxAltitudeSpeed: 4
+  yawSpeed: 90
+  pinchOpenDistance: 0.08
+  pinchClosedDistance: 0.01
+  tiltDeadzone: 0.1
+  tiltMaxAngle: 0.6
 --- !u!1 &1894120008
 GameObject:
   m_ObjectHideFlags: 0
