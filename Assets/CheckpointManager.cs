@@ -29,6 +29,12 @@ public class CheckpointManager : MonoBehaviour
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.transform.position = pos;
 
+            // --- ADD THESE THREE LINES ---
+            sphere.tag = "Checkpoint"; // This is the label
+            SphereCollider col = sphere.GetComponent<SphereCollider>();
+            if (col != null) col.isTrigger = true; // This makes it a "Ghost" you can fly through
+                                                   // -----------------------------
+
             float diameter = reachRadius * 2;
             sphere.transform.localScale = new Vector3(diameter, diameter, diameter);
 
@@ -37,16 +43,8 @@ public class CheckpointManager : MonoBehaviour
                 sphere.GetComponent<Renderer>().material = checkpointMaterial;
             }
 
-            sphere.tag = "Checkpoint";
-            SphereCollider col = sphere.GetComponent<SphereCollider>();
-            if (col != null)
-            {
-                col.isTrigger = true;
-            }
-
             drawnCheckpoints.Add(sphere);
         }
-
         HighlightCheckpoint(0, true);
     }
 
