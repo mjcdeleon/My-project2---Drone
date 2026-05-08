@@ -110,9 +110,17 @@ public class CameraModeSwitcher : MonoBehaviour
     private void UpdateThirdPersonCamera()
     {
         Vector3 desiredPosition = droneTransform.TransformPoint(thirdPersonOffset);
-        thirdPersonCamera.transform.position = Vector3.Lerp(thirdPersonCamera.transform.position, desiredPosition, Time.deltaTime * followSmoothness);
-
-        thirdPersonCamera.transform.LookAt(droneTransform.position);
+        thirdPersonCamera.transform.position = Vector3.Lerp(
+            thirdPersonCamera.transform.position,
+            desiredPosition,
+            Time.deltaTime * followSmoothness
+        );
+        // Look forward in the same direction as the drone instead of at it
+        thirdPersonCamera.transform.rotation = Quaternion.Lerp(
+            thirdPersonCamera.transform.rotation,
+            droneTransform.rotation,
+            Time.deltaTime * followSmoothness
+        );
     }
 
     void OnDisable()

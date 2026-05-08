@@ -1030,18 +1030,7 @@
                 {
                     "name": "",
                     "id": "73edbd01-ea1f-4928-bb99-803e95867251",
-                    "path": "<MetaAimHand>{LeftHand}/pinchStrengthIndex",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Pinch",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "397d7af7-13b1-4a5f-b9de-db8e6d427cb0",
-                    "path": "",
+                    "path": "<MetaAimHand>{RightHand}/pinchStrengthIndex",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
