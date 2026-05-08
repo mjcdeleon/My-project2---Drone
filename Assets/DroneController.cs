@@ -41,9 +41,6 @@ public class DroneController : MonoBehaviour
             return;
         }
 
-        // --- DIRECTION: right index tip -> right middle tip ---
-        // This vector literally follows where your two fingers point in world space.
-        // No rotation math, no coordinate frame guessing.
         Vector3 flyDir = Vector3.zero;
 
         var indexTip = rightHand.GetJoint(XRHandJointID.IndexTip);
@@ -51,7 +48,6 @@ public class DroneController : MonoBehaviour
 
         if (indexTip.TryGetPose(out Pose iPose) && middleTip.TryGetPose(out Pose mPose))
         {
-            // Average the two fingertips, then get direction from wrist to that point
             var wristJoint = rightHand.GetJoint(XRHandJointID.Wrist);
             if (wristJoint.TryGetPose(out Pose wPose))
             {
@@ -61,7 +57,6 @@ public class DroneController : MonoBehaviour
             }
         }
 
-        // --- THROTTLE: left hand pinch distance ---
         float speed = 0f;
         var leftThumb = leftHand.GetJoint(XRHandJointID.ThumbTip);
         var leftIndex = leftHand.GetJoint(XRHandJointID.IndexTip);
@@ -69,11 +64,9 @@ public class DroneController : MonoBehaviour
         if (leftThumb.TryGetPose(out Pose tPose) && leftIndex.TryGetPose(out Pose lPose))
         {
             float dist = Vector3.Distance(tPose.position, lPose.position);
-            // Fully open (~5cm) = 0, fully pinched (~0cm) = max speed
             speed = Mathf.Clamp01(1f - (dist / 0.05f)) * maxMoveSpeed;
         }
 
-        // --- APPLY ---
         if (speed > 0.1f && flyDir != Vector3.zero)
             rb.linearVelocity = flyDir * speed;
         else
