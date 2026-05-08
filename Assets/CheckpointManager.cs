@@ -81,4 +81,21 @@ public class CheckpointManager : MonoBehaviour
             }
         }
     }
+    public Vector3? GetCurrentCheckpointPosition()
+    {
+        if (checkpointPositions == null || currentTargetIndex >= checkpointPositions.Count)
+            return null;
+        return checkpointPositions[currentTargetIndex];
+    }
+
+    public bool IsRaceFinished()
+    {
+        return checkpointPositions != null && currentTargetIndex >= checkpointPositions.Count;
+    }
+
+    public int GetCurrentIndex()
+    {
+        return currentTargetIndex;
+    }
 }
+
