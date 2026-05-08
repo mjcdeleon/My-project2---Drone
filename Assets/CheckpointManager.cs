@@ -1,70 +1,84 @@
-using System.Xml.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CheckpointManager : MonoBehaviour
 {
-    public static CheckpointManager Instance
-    {
-        get; private set;
-    }
-    public Transform[] checkpoints;
-    private int currentIndex = 0;
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        //if(checkpoints == null || checkpoints.Length == 0)
-        //{
+    public parse parser;
+    public Material checkpointMaterial;
 
-        //checkpoints = CreatePlaceholders();
-        //}
-    }
-    public Transform GetCurrentCheckpoint()
+    // 30 feet converted to meters
+    public float reachRadius = 9.144f;
+
+    private List<Vector3> checkpointPositions;
+    private List<GameObject> drawnCheckpoints = new List<GameObject>();
+    private int currentTargetIndex = 0;
+
+    void Start()
     {
-        if (currentIndex < checkpoints.Length)
+        if (parser != null)
         {
-            return checkpoints[currentIndex];
-        }
-        return null;
-    }
-    public string GetCheckpointLabel()
-    {
-        if (currentIndex >= checkpoints.Length)
-        {
-            return "Final Checkpoint";
-        }
-        bool isLast = currentIndex == checkpoints.Length - 1;
-        return $"{name} ({currentIndex + 1}/{checkpoints.Length})";
-    }
-    public void AdvanceCheckpoint()
-    {
-        if (currentIndex < checkpoints.Length)
-        {
-            Debug.Log($"Checkpoint {currentIndex + 1} reached");
-            currentIndex++;
+            checkpointPositions = parser.ParseFile();
+            DrawCheckpoints();
         }
     }
 
-    public bool IsRaceFinished() => currentIndex >= checkpoints.Length;
+    void DrawCheckpoints()
+    {
+        foreach (Vector3 pos in checkpointPositions)
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.position = pos;
+
+            // --- ADD THESE THREE LINES ---
+            sphere.tag = "Checkpoint"; // This is the label
+            SphereCollider col = sphere.GetComponent<SphereCollider>();
+            if (col != null) col.isTrigger = true; // This makes it a "Ghost" you can fly through
+                                                   // -----------------------------
+
+            float diameter = reachRadius * 2;
+            sphere.transform.localScale = new Vector3(diameter, diameter, diameter);
+
+            if (checkpointMaterial != null)
+            {
+                sphere.GetComponent<Renderer>().material = checkpointMaterial;
+            }
+
+            drawnCheckpoints.Add(sphere);
+        }
+        HighlightCheckpoint(0, true);
+    }
+
+    void HighlightCheckpoint(int index, bool active)
+    {
+        if (index >= 0 && index < drawnCheckpoints.Count)
+        {
+            var renderer = drawnCheckpoints[index].GetComponent<Renderer>();
+            renderer.material.color = active ? new Color(0, 1, 0, 0.5f) : new Color(1, 1, 1, 0.3f);
+        }
+    }
+
+    void Update()
+    {
+        if (checkpointPositions == null || currentTargetIndex >= checkpointPositions.Count) return;
+
+        Vector3 targetPos = checkpointPositions[currentTargetIndex];
+        float distance = Vector3.Distance(transform.position, targetPos);
+
+        if (distance <= reachRadius)
+        {
+            Debug.Log($"Checkpoint {currentTargetIndex + 1} reached!");
+
+            drawnCheckpoints[currentTargetIndex].SetActive(false);
+            currentTargetIndex++;
+
+            if (currentTargetIndex < checkpointPositions.Count)
+            {
+                HighlightCheckpoint(currentTargetIndex, true);
+            }
+            else
+            {
+                Debug.Log("Training track finished!");
+            }
+        }
+    }
 }
-    //maybe delete later -- see if checkpoints are already loaded from canvas
-    //private Transform[] CreateCheckpoints()
-    //{
-    //int count = 7;
-    //Transform[] placeholders = new Transform[count];
-    //for (int i = 0; i < count; i++)
-    //{
-    //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-    //go.name = i == count - 1 ? "FinishLine_Placeholder" : $"Checkpoint_{i + 1}_Placeholder";
-    //go.transform.position = new Vector3(i * 30f, 10f, 30f);
-    //go.transform.localScale = Vector3.one * 3f;
-    //go.GetComponent<Renderer>().material.color = i == count - 1 ? Color.yellow : Color.cyan;
-    //Destroy(go.GetComponent<Collider>());
-    //placeholders[i] = go.transform;
-    //}
-    //return placeholders;
-    //}
